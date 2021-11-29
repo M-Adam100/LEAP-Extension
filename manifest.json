@@ -1,0 +1,32 @@
+{
+	"name": "LEAP ",
+	"version": "1.0.0",
+	"description": "",
+	"manifest_version": 3,
+	"incognito": "split",
+	"icons": {
+		"128": "icons/128.png"
+	},
+	"background": {
+		"service_worker": "background.js"
+	},
+	"action": {
+		"default_icon": "icons/128.png",
+		"default_popup": "popup/popup.html"
+	},
+	"permissions": [
+		"storage",
+		"scripting",
+		"webNavigation",
+		"webRequest",
+		"identity",
+		"identity.email"
+		
+	],
+	"host_permissions": [
+		"*://*.samsclub.com/*",
+		"*://*.homedepot.com/p/*",
+		"https://www.walmart.com/*",
+		"http://3.86.137.112/*"
+	]
+}

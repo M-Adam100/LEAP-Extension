@@ -1,0 +1,31 @@
+table {
+    width: 100%;
+    text-align: left;
+    border: 1px solid rgb(87, 114, 227);
+    border-radius: 2px;
+    border-spacing: 0;
+}        
+table th:first-child {
+    border-radius: 2px 0 0 0;
+}
+table th:last-child {
+    border-radius: 0 2px 0 0;
+}
+table td:first-child, table th:first-child {
+    border-left: medium none;
+}
+table th {
+    border-top: medium none;
+    background: rgb(87, 114, 227);
+}
+table td, table th {
+    border-left: 1px solid rgb(87, 114, 227);
+    border-top: 1px solid rgb(87, 114, 227);
+    padding: 10px;
+    text-align: left;
+    padding: 10px;
+    vertical-align: top;
+}
+table tr:hover {
+    background: rgb(87, 114, 227);
+}
