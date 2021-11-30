@@ -19,6 +19,7 @@
 		"scripting",
 		"webNavigation",
 		"webRequest",
+        "tabs",
 		"identity",
 		"identity.email"
 		

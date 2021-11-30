@@ -82,6 +82,11 @@ textarea[name="coverLetter"] {
 	height: 7.5em;
 }
 
+.web {
+	display: flex;
+	flex-direction: column;
+}
+
 [data-name="all-answers"] textarea {
 	height: 3.75em;
 }

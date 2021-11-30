@@ -9,8 +9,8 @@
   <body>
     <!-- NAVIGATION -->
     <ul class="tab-navigation">
-      <li class="tab-link active" target-name="settings">Web</li>
-      <li class="tab-link" target-name="resources">Specific</li>
+      <li class="tab-link active" target-name="web">Web</li>
+      <li class="tab-link" target-name="specific">Specific</li>
 
       <li
         class="link"
@@ -36,36 +36,23 @@
 
     <!-- TAB CONTENTS -->
     <div class="tab-contents">
-      <div class="tab-content" data-name="settings">
+      <div class="tab-content" data-name="web">
         <div class="sub-content active" data-name="">
-          <form
-            name="settings"
-            style="margin: 0 0 -10px 0; background: transparent"
-          >
-            <span class="input-label-top"
-              >Quick Stats on Category and Search Pages:</span
-            ><br />
-            <select name="viewDetails">
-              <option value="true">On</option>
-              <option value="false">Off</option>
-            </select>
-            <span class="input-label-top">UPC Lookup in Product Page:</span
-            ><br />
-            <select name="viewUPCs">
-              <option value="true">On</option>
-              <option value="false">Off</option>
-            </select>
-            <span class="input-label-top"
-              >View Price History:</span
-            ><br />
-            <select name="viewChart">
-              <option value="true">On</option>
-              <option value="false">Off</option>
-            </select>
-          </form>
+          <div
+      style=" z-index: 10; width: 100%; height: 100%; background: rgb(255 255 255); top: 0; left: 0;">
+      <div id = "error" style="display: none; padding: 7.5px 8.5px; font-size: 11px; letter-spacing: 1px; margin-bottom: 10px; border: 1px solid rgba(0, 0, 0, 0.075); border-radius: 0; background: rgb(244 67 54 / 36%); text-align: center;">Invalid Keys</div>
+      <div class="web" style="margin:  10px 10px; text-align: justify;">
+        <span class="input-label-top">Number of Contacts</span>
+        <input id="numberOfContacts" type="text"></input>
+        <span class="input-label-top">Keywords</span>
+        <input id="keywords" type="text"></input>
+        <button id="leap">LEAP</button>
+       
+      </div>
+    </div>
         </div>
       </div>
-      <div class="tab-content" data-name="resources">
+      <div class="tab-content" data-name="specific">
         <div style="line-height: 1.75em;">
             <p style="margin-top: 0;"><strong>Resources:</strong><br>❐ <a href="https://wmsellertools.firstpromoter.com/" target="_blank" title="" rel="noopener">Become an Affiliate and Earn Recurring Revenue</a><br>❐ <a href="mailto:wmsellertools@ecomcircles.com" target="_blank" title="" rel="noopener">Get Support</a><br>❐ <a href="https://www.wmsellertools.com/" target="_blank" title="" rel="noopener">Upgrade Your License or Buy Another One</a><br>❐ Have a Suggestion or Want to Partner Up on a Promotion? Get in touch with us at <a href="mailto:wmsellertools@ecomcircles.com" target="_blank" title="" rel="noopener">wmsellertools@ecomcircles.com</a></p>
             <p style="margin-top: 0;"><strong>Other Tools:</strong><br>❐ <a href="https://ecomcircles.com/" target="_blank" title="" rel="noopener">Ecom Circles</a> - Providing You the Tools Your Ecommerce Business Needs in one Spot<br>❐ <a href="https://chrome.google.com/webstore/detail/walmart-wfs-profit-calcul/boecmgggeigllcdocgioijmleimjbfkg" target="_blank" title="" rel="noopener">Walmart WFS Calculator</a> - Calculating Walmart Fulfilment Fee on the go to make product research faster and easier. </p>

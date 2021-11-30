@@ -49,93 +49,52 @@ const setLocal = (localName, jsonData) => localStorage[localName] = JSON.stringi
 // MAIN
 const viewExtension = () => {
 	extensionVersion.innerHTML = `v<span style="font-family: sans-serif; font-size: 1.075em;">${chrome.runtime.getManifest().version}</span>`
-	chrome.storage.local.get(['settingsData'], CS => {
-		console.log(CS.settingsData)
-		setFormData('[name="settings"]', CS.settingsData);
-	});
-
-	document.querySelector('[name="settings"]').onchange = document.querySelector('[name="settings"]').onkeyup = () => {
-		chrome.storage.local.set({
-			settingsData: getFormData('[name="settings"]')
-		});
-	};
 };
 
-function removeFromInstalled() {
-	chrome.identity.getProfileUserInfo(async (userinfo) => {
-		if( userinfo.email ) {
-			await fetch("https://licenses.sceptermarketing.com/activecampaign/deleteDeal", {
-				"headers": {
-					"content-type": "application/json"
-				},
-				"body": JSON.stringify({
-					email: userinfo.email,
-					currentProductId: 10375297
-				}),
-				"method": "DELETE"
-			})
-		}
-		
+document.getElementById('leap').addEventListener('click', () => {
+	const numberOfContacts = document.getElementById('numberOfContacts').value;
+	const keywords = document.getElementById('keywords').value;
+	const keywordArray = keywords.split(',');
+	chrome.tabs.query({
+		active: true,
+		lastFocusedWindow: true
+	}, async (tabs) => {
+		const res = await fetch("http://localhost:3000/saveData", {
+		"method": "POST",
+		"headers": {
+			"content-type": "application/json"
+		},
+		"body": JSON.stringify({
+			fullname: 'Muhammad Adam',
+			company: 'XYZ',
+			keywords: keywordArray,
+			numberOfContacts,
+			emailAddress: "adam184688@gmail.com",
+			url: tabs[0].url
+		})
+	}).then(body => body.json());
 	});
-}
 
-function addTagToContact() {
-	chrome.identity.getProfileUserInfo(async (userinfo) => {
-		if( userinfo.email ) {
-			await fetch("https://licenses.sceptermarketing.com/activecampaign/addTagToContact", {
-				"headers": {
-					"content-type": "application/json"
-				},
-				"body": JSON.stringify({
-					email: userinfo.email,
-					currentProductId: 10375297
-				}),
-				"method": "POST"
-			})
-		}
-		
-	});
-}
-
-//GET EMAIL
-const setDeal = () => {
-	chrome.identity.getProfileUserInfo(async (userinfo) => {
-		if( userinfo.email ) {
-			await fetch("https://licenses.sceptermarketing.com/activecampaign/createContact", {
-				"headers": {
-					"content-type": "application/json"
-				},
-				"body": JSON.stringify({
-					email: userinfo.email,
-					currentProductId: 10375297
-				}),
-				"method": "POST"
-			})
-		}
-		
-	});
-}
-
+	
+})
 
 // LICENSING
 const checkLicense = async () => {
-	// const licensingStatus = await fetch("http://3.86.137.112:3000/licensing/authorize", {
-	// 	"method": "POST",
-	// 	"headers": {
-	// 		"content-type": "application/json"
-	// 	},
-	// 	"body": JSON.stringify({
-	// 		currentProductId: 10375297
-	// 	})
-	// }).then(body => body.json());
-	// if (!licensingStatus.authorized) {
-	// 	await setDeal();
+	const licensingStatus = await fetch("http://localhost:3000/authorize", {
+		"method": "POST",
+		"headers": {
+			"content-type": "application/json"
+		},
+		"body": JSON.stringify({
+			authorizationCode: getLocal('authorizationCode')
+		})
+	}).then(body => body.json());
+	if (!licensingStatus.authorized) {
 		licensingNode.innerHTML = `
 			<div style="position: fixed; z-index: 10; width: 100%; height: 100%; background: rgb(255 255 255); top: 0; left: 0;">
 				<form name="licensing" style="margin: 95px 40px 40px; zoom: 1.125; text-align: justify;">
 					<div id="licensingMessage"></div>
-					<span class="input-label-top">Please enter your email</span><br />
-					<input type="text" name="email">
+					
 					<span class="input-label-top">Please enter your license key to activate this extension:</span><br />
 					<input type="text" name="licenseKey">
 					<button>Activate</button>
@@ -143,54 +102,36 @@ const checkLicense = async () => {
 				</form>
 			</div>
 		`
-	// 	document.querySelector('[name="licensing"]').addEventListener('submit', async thisEvent => {
-	// 		thisEvent.preventDefault();
-	// 		licensingNode.style.display = 'none'
-	// 		const licensingStatus = await fetch("http://3.86.137.112:3000/licensing/license", {
-	// 			"headers": {
-	// 				"content-type": "application/json"
-	// 			},
-	// 			"body": JSON.stringify({
-	// 				currentProductId: 10375297,
-	// 				licenseKey: getFormData('[name="licensing"]').licenseKey
-	// 			}),
-	// 			"method": "POST"
-	// 		}).then(body => body.json());
-	// 		if (licensingStatus.licenseValid) checkLicense();
-	// 		else {
-	// 			licensingMessage.innerHTML = `<div style="padding: 7.5px 8.5px; font-size: 11px; letter-spacing: 1px; margin-bottom: 10px; border: 1px solid rgba(0, 0, 0, 0.075); border-radius: 0; background: rgb(244 67 54 / 36%); text-align: center;">${licensingStatus.message}</div>`;
-	// 			licensingNode.style.display = 'block'
-	// 		}
-	// 	});
-	// } else {
-	// 	await removeFromInstalled();
-	// 	if (licensingStatus.validLicenses['WM Seller Tool Standard'] || licensingStatus.validLicenses['WM Seller Tool Pro'] || licensingStatus.validLicenses['WM Seller Tool Enterprise']) {
-	// 		chrome.identity.getProfileUserInfo(async (userinfo) => {
-	// 			if( userinfo.email  && licensingStatus.userEmail !== userinfo.email) {
-	// 				await addTagToContact();
-	// 			}
-	// 		});
-	// 		chrome.storage.local.set({
-	// 			settingsData: {
-	// 				viewDetails: true,
-	// 				viewChart: true,
-	// 				viewUPCs: true
-	// 			}
-	// 		});
-	// 	} else if (licensingStatus.validLicenses['WM Seller Tool Lite']) {
+		document.querySelector('[name="licensing"]').addEventListener('submit', async thisEvent => {
+			thisEvent.preventDefault();
+			licensingNode.style.display = 'none'
+			const licensingStatus = await fetch("http://localhost:3000/license", {
+				"headers": {
+					"content-type": "application/json"
+				},
+				"body": JSON.stringify({
+					licenseKey: getFormData('[name="licensing"]').licenseKey
+				}),
+				"method": "POST",
+				
+			}).then(body => body.json());
+			console.log(licensingStatus)
+			if (licensingStatus.licenseValid) {
+				setLocal('authorizationCode', licensingStatus.authorizationCode);
+			} 
+			else {
+				licensingMessage.innerHTML = `<div style="padding: 7.5px 8.5px; font-size: 11px; letter-spacing: 1px; margin-bottom: 10px; border: 1px solid rgba(0, 0, 0, 0.075); border-radius: 0; background: rgb(244 67 54 / 36%); text-align: center;">${licensingStatus.message}</div>`;
+				licensingNode.style.display = 'block'
+			}
+		});
+	} else {
+		if (licensingStatus.validLicenses['Personal_Use'] || licensingStatus.validLicenses['WM Seller Tool Pro'] || licensingStatus.validLicenses['WM Seller Tool Enterprise']) {
 			
-	// 		chrome.storage.local.set({
-	// 			settingsData: {
-	// 				viewDetails: false,
-	// 				viewUPCs: true,
-	// 				viewChart: true
-	// 			}
-	// 		});
-	// 		document.querySelector('form select[name="viewDetails"]').setAttribute('disabled', '')
-	// 	}                
-	// 	viewExtension();
-	// 	openTab('settings');
-	// }
+			
+		}               
+		viewExtension();
+		openTab('web');
+	}
 };
 checkLicense();
 
@@ -199,9 +140,5 @@ const viewResources = () => {
 	if (new Date().getTime() < currentResources) {
 
 	}
-
-	setLocal('currentResources', {
-		
-	})
 
 }
