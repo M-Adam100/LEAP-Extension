@@ -6,11 +6,11 @@ input, select, textarea {
 	padding: 7.5px 8.5px;
 	width: 100%;
 	box-sizing : border-box;
-	border: 1px solid rgb(87, 114, 227);
+	border: 1px solid #4c7857;
 	font-size: 12px;
 	border-radius: 0;
 	height: 30.5px;
-	background: rgb(215, 219, 235);
+	background: rgb(239 245 238);
 	color: rgba(0, 0, 0, 0.75);
 }
 select {
