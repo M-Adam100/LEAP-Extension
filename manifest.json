@@ -15,14 +15,7 @@
 		"default_popup": "popup/popup.html"
 	},
 	"permissions": [
-		"storage",
-		"scripting",
-		"webNavigation",
-		"webRequest",
-        "tabs",
-		"identity",
-		"identity.email"
-		
+        "tabs"
 	],
 	"host_permissions": [
 		"*://*.samsclub.com/*",
