@@ -92,6 +92,8 @@ document.getElementById('leap_specific').addEventListener('click', () => {
   const industry = document.getElementById('industry').value;
 
   const keywordArray = keywords.split(',');
+  const industryArray = industry.split(',');
+  const geographyArray = geography.split(',');
   chrome.tabs.query({
     active: true,
     lastFocusedWindow: true
@@ -106,8 +108,8 @@ document.getElementById('leap_specific').addEventListener('click', () => {
         company: getLocal('company'),
         keywords: keywordArray,
         numberOfContacts,
-        geography,
-        industry,
+        geography: geographyArray,
+        industry: industryArray,
         type: 'SPECIFIC',
         emailAddress: getLocal('emailAddress'),
       })
