@@ -16,11 +16,5 @@
 	},
 	"permissions": [
         "tabs"
-	],
-	"host_permissions": [
-		"*://*.samsclub.com/*",
-		"*://*.homedepot.com/p/*",
-		"https://www.walmart.com/*",
-		"http://3.86.137.112/*"
 	]
 }

@@ -17,7 +17,7 @@ select {
 	padding: 6.5px 7.5px;
 }
 input:focus, select:focus, textarea:focus {
-	border: 1px solid rgb(87, 114, 227);
+	border: 1px solid rgb(48, 104, 55);
 }
 textarea {
 	resize: none;

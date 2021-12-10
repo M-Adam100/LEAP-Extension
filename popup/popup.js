@@ -51,72 +51,102 @@ const viewExtension = () => {
   extensionVersion.innerHTML = `v<span style="font-family: sans-serif; font-size: 1.075em;">${chrome.runtime.getManifest().version}</span>`
 };
 
+chrome.tabs.query({
+  active: true,
+  lastFocusedWindow: true
+}, async (tabs) => {
+  const url = tabs[0].url;
+  if (url.includes('https://www.linkedin.com/in')) {
+    document.getElementById('numberOfContacts').value = 1;
+    document.getElementById('numberOfContacts').setAttribute('disabled', true);
+    document.getElementById('keywords').setAttribute('disabled', true);
+    document.getElementById('numberOfContacts_specific').value = 1;
+    document.getElementById('numberOfContacts_specific').setAttribute('disabled', true);
+    document.getElementById('keywords_specific').setAttribute('disabled', true);
+    document.getElementById('geography').setAttribute('disabled', true);
+    document.getElementById('industry').setAttribute('disabled', true);
+  }
+
+})
+
+
 document.getElementById('leap').addEventListener('click', () => {
+  const contactsLeft = getLocal('contactsLeft');
   const numberOfContacts = document.getElementById('numberOfContacts').value;
-  const keywords = document.getElementById('keywords').value;
-  const keywordArray = keywords.split(',');
-  chrome.tabs.query({
-    active: true,
-    lastFocusedWindow: true
-  }, async (tabs) => {
-    const res = await fetch("https://leap-extension.herokuapp.com/saveData", {
-      "method": "POST",
-      "headers": {
-        "content-type": "application/json"
-      },
-      "body": JSON.stringify({
-        fullname: getLocal('username'),
-        company: getLocal('company'),
-        keywords: keywordArray,
-        numberOfContacts,
-        type: 'WEB',
-        emailAddress: getLocal('emailAddress'),
-        url: tabs[0].url
+  if (contactsLeft < numberOfContacts) {
+    alert("Not Enough Contacts, Kindly Upgrade your plan!")
+  } else {
+    const keywords = document.getElementById('keywords').value;
+    const keywordArray = keywords.split(',');
+    chrome.tabs.query({
+      active: true,
+      lastFocusedWindow: true
+    }, async (tabs) => {
+      const res = await fetch("https://leap-extension.herokuapp.com/saveData", {
+        "method": "POST",
+        "headers": {
+          "content-type": "application/json"
+        },
+        "body": JSON.stringify({
+          fullName: getLocal('username'),
+          company: getLocal('company'),
+          keywords: keywordArray,
+          numberOfContacts,
+          type: 'WEB',
+          emailAddress: getLocal('emailAddress'),
+          url: tabs[0].url
+        })
       })
-    })
-    document.getElementById('message').style.display = 'flex'
-    setTimeout(() => {
-      document.getElementById('message').style.display = 'none'
-
-    }, 1500);
-
-  });
-
-
+      document.getElementById('message').style.display = 'flex'
+      setTimeout(() => {
+        document.getElementById('message').style.display = 'none'
+  
+      }, 1500);
+  
+    });
+  }
 })
 
 document.getElementById('leap_specific').addEventListener('click', () => {
   const numberOfContacts = document.getElementById('numberOfContacts_specific').value;
-  const keywords = document.getElementById('keywords_specific').value;
-  const geography = document.getElementById('geography').value;
-  const industry = document.getElementById('industry').value;
-
-  const keywordArray = keywords.split(',');
-  const industryArray = industry.split(',');
-  const geographyArray = geography.split(',');
-  chrome.tabs.query({
-    active: true,
-    lastFocusedWindow: true
-  }, async (tabs) => {
-    const res = await fetch("https://leap-extension.herokuapp.com/saveData", {
-      "method": "POST",
-      "headers": {
-        "content-type": "application/json"
-      },
-      "body": JSON.stringify({
-        fullname: getLocal('username'),
-        company: getLocal('company'),
-        keywords: keywordArray,
-        numberOfContacts,
-        geography: geographyArray,
-        industry: industryArray,
-        type: 'SPECIFIC',
-        emailAddress: getLocal('emailAddress'),
+  const contactsLeft = getLocal('contactsLeft');
+  if (contactsLeft < numberOfContacts) {
+    alert("Not enough contacts Left!");
+  } else {
+    const keywords = document.getElementById('keywords_specific').value;
+    const geography = document.getElementById('geography').value;
+    const industry = document.getElementById('industry').value;
+    const keywordArray = keywords.split(',');
+    const industryArray = industry.split(',');
+    const geographyArray = geography.split(',');
+    chrome.tabs.query({
+      active: true,
+      lastFocusedWindow: true
+    }, async (tabs) => {
+      const res = await fetch("https://leap-extension.herokuapp.com/saveData", {
+        "method": "POST",
+        "headers": {
+          "content-type": "application/json"
+        },
+        "body": JSON.stringify({
+          fullName: getLocal('username'),
+          company: getLocal('company'),
+          keywords: keywordArray,
+          numberOfContacts,
+          geography: geographyArray,
+          industry: industryArray,
+          type: 'SPECIFIC',
+          emailAddress: getLocal('emailAddress'),
+        })
       })
-    }).then(body => body.json());
-  });
+    });  
+    document.getElementById('message_specific').style.display = 'flex'
+    setTimeout(() => {
+      document.getElementById('message_specific').style.display = 'none'
 
-
+    }, 1500);
+  }
+  
 })
 
 // LICENSING
@@ -157,7 +187,6 @@ const checkLicense = async () => {
         "method": "POST",
 
       }).then(body => body.json());
-      console.log(licensingStatus)
       if (licensingStatus.licenseValid) {
         setLocal('authorizationCode', licensingStatus.authorizationCode);
         setLocal('username', licensingStatus.username);
@@ -175,9 +204,10 @@ const checkLicense = async () => {
     document.getElementById('remaining_contacts').innerText += ": " + currentLicense.contactsLeft;
     document.getElementById('remaining_contacts_specific').innerText += ": " + currentLicense.contactsLeft;
     [...document.getElementsByClassName('progress')].forEach(item => item.style.width = `${currentLicense.contactsLeft}%`)
-    if (currentLicense.feature) {
-      document.querySelector('li[target-name="specific"').style.pointerEvents = 'all';
+    if (!currentLicense.feature) {
+      document.querySelector('div[data-name="specific"]').classList.add('blur');
     }
+    setLocal('contactsLeft', currentLicense.contactsLeft);
     if (currentLicense.contactsLeft > 200) {
       document.getElementById('remainingContact_Web').style.display = 'none';
       document.getElementById('remainingContact_Specific').style.display = 'none';

@@ -107,3 +107,12 @@ textarea[name="coverLetter"] {
     background-color: #3f7853!important;
     border-radius: 40px;
 }
+
+.blur {
+    /* -webkit-filter: blur(3px); */
+    -moz-filter: blur(3px);
+    -o-filter: blur(3px);
+    -ms-filter: blur(3px);
+    filter: blur(2px);
+    background-color: #fff;
+  }

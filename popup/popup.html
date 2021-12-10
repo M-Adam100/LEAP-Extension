@@ -10,7 +10,7 @@
     <!-- NAVIGATION -->
     <ul class="tab-navigation">
       <li class="tab-link active" target-name="web">Web</li>
-      <li class="tab-link" target-name="specific" style="pointer-events: none;">Specific</li>
+      <li class="tab-link" target-name="specific">Specific</li>
 
       <li
         class="link"
@@ -48,7 +48,7 @@
         <span id="remaining_contacts" class="input-label-top">Contacts Remaining</span>
         <br />
         <span class="input-label-top">Number of Contacts</span>
-        <input id="numberOfContacts" type="number"></input>
+        <input id="numberOfContacts" type="number" min="1"></input>
         <span class="input-label-top">Keywords</span>
         <input id="keywords" type="text"></input>
         <button id="leap">LEAP</button>
@@ -74,9 +74,12 @@
           <span class="input-label-top">Geography</span>
           <input id="geography" type="text"></input>
           <span class="input-label-top">Number of Contacts</span>
-          <input id="numberOfContacts_specific" type="number"></input>
+          <input id="numberOfContacts_specific" type="number" min="1"></input>
           
           <button id="leap_specific">LEAP</button>
+          <br/>
+      <div id = "message_specific" style="display: none; flex-direction: column; padding: 7.5px 8.5px; font-size: 11px; font-weight: bolder; letter-spacing: 1px; margin-bottom: 10px; border: 1px solid rgba(0, 0, 0, 0.075); border-radius: 0; background: rgb(0 0 0 / 10%); text-align: center;">Sucessfully Leaped <span style="font-weight: 100;">Check your email shortly</span></div>
+
          
         </div>
     </div>
