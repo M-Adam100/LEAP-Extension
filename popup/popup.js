@@ -91,6 +91,11 @@ document.getElementById('leap').addEventListener('click', () => {
       active: true,
       lastFocusedWindow: true
     }, async (tabs) => {
+      const url = new URL(tabs[0].url);
+      let formattedUrl;
+      if (url.href.includes('linkedin')) {
+        formattedUrl = url;
+      } else formattedUrl = url.origin;
       const res = await fetch("https://leap-extension.herokuapp.com/saveData", {
         "method": "POST",
         "headers": {
@@ -103,7 +108,7 @@ document.getElementById('leap').addEventListener('click', () => {
           numberOfContacts,
           type: 'WEB',
           emailAddress: getLocal('emailAddress'),
-          url: tabs[0].url
+          url: formattedUrl
         })
       })
       document.getElementById('message').style.display = 'flex'
@@ -175,11 +180,15 @@ const checkLicense = async () => {
 			<div style="position: fixed; z-index: 10; width: 100%; height: 100%; background: rgb(255 255 255); top: 0; left: 0;">
 				<form name="licensing" style="margin: 95px 40px 40px; zoom: 1.125; text-align: justify;">
 					<div id="licensingMessage"></div>
-					
+          <div style="
+          display: flex;
+          justify-content: center;
+      ">	<img src="../theme/assets/images/leapblack.png" height= "50"/></div>
+				
 					<span class="input-label-top">Please enter your license key to activate this extension:</span><br />
 					<input type="text" name="licenseKey">
 					<button>Activate</button>
-					<span class="input-label-top" style="margin-top: 7.5px;">Don't have a license key? <a href="https://www.example.com" target="_blank">Click here to get one.</a></span>
+					<span class="input-label-top" style="margin-top: 7.5px;">Don't have a license key? <a href="https://leap.green/pricing" target="_blank">Click here to get one.</a></span>
 				</form>
 			</div>
 		`
@@ -212,21 +221,20 @@ const checkLicense = async () => {
     const currentLicense = licensingStatus.validLicenses['Personal_Use'] || licensingStatus.validLicenses['Free_Trial'] || licensingStatus.validLicenses['Full_Access'];
     document.getElementById('remaining_contacts').innerText += ": " + currentLicense.contactsLeft;
     document.getElementById('remaining_contacts_specific').innerText += ": " + currentLicense.contactsLeft;
-    let percentage = (currentLicense/100)*CONTACTS.Personal;
+    let percentage = ((currentLicense.contactsLeft/100)*CONTACTS.Personal) * 100;
     if (!currentLicense.feature) {
       document.querySelector('div[data-name="specific"]').classList.add('blur');
-      percentage = (currentLicense/100)*CONTACTS.Free_Trial;
+      percentage = ((currentLicense.contactsLeft/100)*CONTACTS.Free_Trial) * 100;
     } 
+    console.log(percentage);
     [...document.getElementsByClassName('progress')].forEach(item => item.style.width = `${percentage}%`)
 
     setLocal('contactsLeft', currentLicense.contactsLeft);
     if (currentLicense.contactsLeft > 200) {
-      document.getElementById('remainingContact_Web').style.display = 'none';
-      document.getElementById('remainingContact_Specific').style.display = 'none';
-      document.getElementById('remaining_contacts').style.display = 'none';
-      document.getElementById('remaining_contacts_specific').style.display = 'none';
-      document.getElementById('remaining_contacts').style.display = 'none';
-      document.getElementById('remaining_contacts_specific').style.display = 'none';
+      document.getElementById('remainingContact_Web').remove();
+      document.getElementById('remainingContact_Specific').remove();
+      document.getElementById('remaining_contacts').remove();
+      document.getElementById('remaining_contacts_specific').remove();
     }
     viewExtension();
     openTab('web');
