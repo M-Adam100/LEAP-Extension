@@ -1,3 +1,10 @@
+//CONSTANTS
+
+const CONTACTS = {
+  Free_Trial: 10,
+  Personal: 100
+}
+
 // FUNCTIONS
 const getFormData = (formSelector, allRequired, separateBy) => {
   var formInputs = document.querySelector(formSelector).querySelectorAll("[name]:not([type=\"file\"])"),
@@ -48,7 +55,7 @@ const setLocal = (localName, jsonData) => localStorage[localName] = JSON.stringi
 
 // MAIN
 const viewExtension = () => {
-  extensionVersion.innerHTML = `v<span style="font-family: sans-serif; font-size: 1.075em;">${chrome.runtime.getManifest().version}</span>`
+  extensionVersion.innerHTML = `<a href="https://www.leap.green/contact" target= "_blank" style="font-size: 1.075em; color: black">Contact Support</a>`
 };
 
 chrome.tabs.query({
@@ -73,7 +80,9 @@ chrome.tabs.query({
 document.getElementById('leap').addEventListener('click', () => {
   const contactsLeft = getLocal('contactsLeft');
   const numberOfContacts = document.getElementById('numberOfContacts').value;
-  if (contactsLeft < numberOfContacts) {
+  if (!numberOfContacts) {
+    alert("No Contacts Selected");
+  } else if (contactsLeft < numberOfContacts) {
     alert("Not Enough Contacts, Kindly Upgrade your plan!")
   } else {
     const keywords = document.getElementById('keywords').value;
@@ -160,7 +169,7 @@ const checkLicense = async () => {
       authorizationCode: getLocal('authorizationCode')
     })
   }).then(body => body.json());
-  console.log(licensingStatus);
+
   if (!licensingStatus.authorized) {
     licensingNode.innerHTML = `
 			<div style="position: fixed; z-index: 10; width: 100%; height: 100%; background: rgb(255 255 255); top: 0; left: 0;">
@@ -203,10 +212,13 @@ const checkLicense = async () => {
     const currentLicense = licensingStatus.validLicenses['Personal_Use'] || licensingStatus.validLicenses['Free_Trial'] || licensingStatus.validLicenses['Full_Access'];
     document.getElementById('remaining_contacts').innerText += ": " + currentLicense.contactsLeft;
     document.getElementById('remaining_contacts_specific').innerText += ": " + currentLicense.contactsLeft;
-    [...document.getElementsByClassName('progress')].forEach(item => item.style.width = `${currentLicense.contactsLeft}%`)
+    let percentage = (currentLicense/100)*CONTACTS.Personal;
     if (!currentLicense.feature) {
       document.querySelector('div[data-name="specific"]').classList.add('blur');
-    }
+      percentage = (currentLicense/100)*CONTACTS.Free_Trial;
+    } 
+    [...document.getElementsByClassName('progress')].forEach(item => item.style.width = `${percentage}%`)
+
     setLocal('contactsLeft', currentLicense.contactsLeft);
     if (currentLicense.contactsLeft > 200) {
       document.getElementById('remainingContact_Web').style.display = 'none';

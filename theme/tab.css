@@ -28,12 +28,15 @@
 .tab-content {
 	display: none;
 	padding: 12.5px;
+	width: auto;
 }
 .tab-content.active {
 	display: block;
+	width: auto;
 }
 .tab-content > .sub-content {
 	display: none;
+
 }
 .tab-content > .sub-content.active {
 	display: block;
