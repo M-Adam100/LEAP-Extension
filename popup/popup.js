@@ -55,7 +55,7 @@ const setLocal = (localName, jsonData) => localStorage[localName] = JSON.stringi
 
 // MAIN
 const viewExtension = () => {
-  extensionVersion.innerHTML = `<a href="https://www.leap.green/contact" target= "_blank" style="font-size: 1.075em; color: black">Contact Support</a>`
+  extensionVersion.innerHTML = `<a href="https://www.leap.green/contact" target= "_blank" style="font-size: 1.075em; color: white">Contact Support</a>`
 };
 
 chrome.tabs.query({
@@ -86,7 +86,6 @@ document.getElementById('leap').addEventListener('click', () => {
     alert("Not Enough Contacts, Kindly Upgrade your plan!")
   } else {
     const keywords = document.getElementById('keywords').value;
-    const keywordArray = keywords.split(',');
     chrome.tabs.query({
       active: true,
       lastFocusedWindow: true
@@ -104,11 +103,11 @@ document.getElementById('leap').addEventListener('click', () => {
         "body": JSON.stringify({
           fullName: getLocal('username'),
           company: getLocal('company'),
-          keywords: keywordArray,
-          numberOfContacts,
-          type: 'WEB',
           emailAddress: getLocal('emailAddress'),
-          url: formattedUrl
+          numberOfContacts,
+          keywords: keywords,
+          url: formattedUrl,
+          type: 'WEB'
         })
       })
       document.getElementById('message').style.display = 'flex'
@@ -218,7 +217,7 @@ const checkLicense = async () => {
       }
     });
   } else {
-    const currentLicense = licensingStatus.validLicenses['Personal_Use'] || licensingStatus.validLicenses['Free_Trial'] || licensingStatus.validLicenses['Full_Access'];
+    const currentLicense = licensingStatus.validLicenses['Personal_Use-Monthly'] || licensingStatus.validLicenses['Free_Trial-Monthly'] || licensingStatus.validLicenses['Full_Access-Monthly'] || licensingStatus.validLicenses['Personal_Use-Yearly'] || licensingStatus.validLicenses['Free_Trial-Yearly'] || licensingStatus.validLicenses['Full_Access-Yearly'];
     document.getElementById('remaining_contacts').innerText += ": " + currentLicense.contactsLeft;
     document.getElementById('remaining_contacts_specific').innerText += ": " + currentLicense.contactsLeft;
     let percentage = ((currentLicense.contactsLeft/100)*CONTACTS.Personal) * 100;
