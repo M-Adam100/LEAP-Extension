@@ -5,15 +5,47 @@ const CONTACTS = {
   Personal: 100
 }
 
+const getElementById = (id) => document.getElementById(id)
+
+const showMessage = (primaryMessage, secondaryMessage, type) => {
+  const messageNode = getElementById('message');
+  if (type == 200) messageNode.style.background = 'rgb(0 0 0 / 10%)'
+  else messageNode.style.background = 'rgb(203 32 32 / 10%)'
+  messageNode.innerHTML = primaryMessage + '<br/>' + secondaryMessage;
+  messageNode.style.display = 'flex';
+  setTimeout(() => {
+    messageNode.style.display = 'none'
+  }, 2000);
+}
+
+const showSpecificMessage = (primaryMessage, secondaryMessage, type) => {
+  const messageNode = getElementById('message_specific');
+  console.log(messageNode);
+  if (type == 200) messageNode.style.background = 'rgb(0 0 0 / 10%)'
+  else messageNode.style.background = 'rgb(203 32 32 / 10%)'
+  messageNode.innerHTML = primaryMessage + '<br/>' + secondaryMessage;
+  messageNode.style.display = 'flex';
+  setTimeout(() => {
+   messageNode.style.display = 'none'
+  }, 2000);
+}
+
+const removeContactsBar = () => {
+  getElementById('remainingContact_Web').remove();
+  getElementById('remainingContact_Specific').remove();
+  getElementById('remaining_contacts').remove();
+  getElementById('remaining_contacts_specific').remove();
+}
+
 // FUNCTIONS
 const getFormData = (formSelector, allRequired, separateBy) => {
-  var formInputs = document.querySelector(formSelector).querySelectorAll("[name]:not([type=\"file\"])"),
+  var formInputs = document.querySelector(formSelector).querySelectorAll("[id]:not([type=\"file\"])"),
     formData = {},
     noBlank = true;
   formInputs.forEach(formInput => {
     if (!formInput) return;
     if (!formInput.value) noBlank = false;
-    var inputName = formInput.getAttribute("name");
+    var inputName = formInput.getAttribute("id");
     if (formInput.getAttribute("type") === "checkbox") var inputValue = (formInput.checked) ? true : false;
     else if (formInput.getAttribute("type") === "radio") {
       if (!formInput.checked) return;
@@ -64,28 +96,41 @@ chrome.tabs.query({
 }, async (tabs) => {
   const url = tabs[0].url;
   if (url.includes('https://www.linkedin.com/in')) {
-    document.getElementById('numberOfContacts').value = 1;
-    document.getElementById('numberOfContacts').setAttribute('disabled', true);
-    document.getElementById('keywords').setAttribute('disabled', true);
-    document.getElementById('numberOfContacts_specific').value = 1;
-    document.getElementById('numberOfContacts_specific').setAttribute('disabled', true);
-    document.getElementById('keywords_specific').setAttribute('disabled', true);
-    document.getElementById('geography').setAttribute('disabled', true);
-    document.getElementById('industry').setAttribute('disabled', true);
+    getElementById('connections_div').style.display = 'flex';
+    getElementById('numberOfContacts').value = 1;
+    getElementById('numberOfContacts').setAttribute('disabled', true);
+    getElementById('keywords').setAttribute('disabled', true);
+    getElementById('keywords').value = "none"
+    // getElementById('numberOfContacts_specific').value = 1;
+    // getElementById('numberOfContacts_specific').setAttribute('disabled', true);
+    // getElementById('keywords_specific').setAttribute('disabled', true);
+    // getElementById('geography').setAttribute('disabled', true);
+    // getElementById('industry').setAttribute('disabled', true);
   }
 
+})
+
+document.getElementById('form_specific').addEventListener('submit', (e) => {
+  e.preventDefault();
+  let data = getFormData('form');
+  if (!data.numberOfContacts_specific) {
+    showSpecificMessage("Invalid", "Number of contacts cannot be empty!", 400);
+  } else {
+
+  }
 })
 
 
 document.getElementById('leap').addEventListener('click', () => {
   const contactsLeft = getLocal('contactsLeft');
   const numberOfContacts = document.getElementById('numberOfContacts').value;
+  const connections = getElementById('connections')?.checked;
   if (!numberOfContacts) {
-    alert("No Contacts Selected");
+    showMessage("Invalid", "Number of contacts cannot be empty!", 400);
   } else if (contactsLeft < numberOfContacts) {
-    alert("Not Enough Contacts, Kindly Upgrade your plan!")
+    showMessage("Not Enough Contacts","Please Update Your Plan!")
   } else {
-    const keywords = document.getElementById('keywords').value;
+    const keywords = getElementById('keywords').value;
     chrome.tabs.query({
       active: true,
       lastFocusedWindow: true
@@ -95,7 +140,7 @@ document.getElementById('leap').addEventListener('click', () => {
       if (url.href.includes('linkedin')) {
         formattedUrl = url;
       } else formattedUrl = url.origin;
-      const res = await fetch("https://leap-extension.herokuapp.com/saveData", {
+      const res = await fetch("http://localhost:3000/saveData", {
         "method": "POST",
         "headers": {
           "content-type": "application/json"
@@ -107,36 +152,53 @@ document.getElementById('leap').addEventListener('click', () => {
           numberOfContacts,
           keywords: keywords,
           url: formattedUrl,
+          connections: connections || false,
           type: 'WEB'
         })
       })
-      document.getElementById('message').style.display = 'flex'
-      setTimeout(() => {
-        document.getElementById('message').style.display = 'none'
-  
-      }, 1500);
-  
+      showMessage('Successfully Leaped', 'Check Email Shortly', 200);
+
     });
   }
 })
 
-document.getElementById('leap_specific').addEventListener('click', () => {
+document.getElementById('leap_frog').addEventListener('click', () => {
+  const text = getElementById('leapInfo').value;
+  if (!text) showFrogMessage("Text Cannot be Empty");
+  else {
+    const res = await fetch("http://localhost:3000/saveData", {
+      "method": "POST",
+      "headers": {
+        "content-type": "application/json"
+      },
+      "body": JSON.stringify({
+        fullName: getLocal('username'),
+        company: getLocal('company'),
+        emailAddress: getLocal('emailAddress'),
+        text: text,
+        type: 'FROG'
+      })
+    })
+  }
+  
+})
+
+document.getElementById('leap_specificss')?.addEventListener('click', () => {
   const numberOfContacts = document.getElementById('numberOfContacts_specific').value;
   const contactsLeft = getLocal('contactsLeft');
   if (contactsLeft < numberOfContacts) {
     alert("Not enough contacts Left!");
   } else {
-    const keywords = document.getElementById('keywords_specific').value;
-    const geography = document.getElementById('geography').value;
-    const industry = document.getElementById('industry').value;
-    const keywordArray = keywords.split(',');
+    const keywords = getElementById('keywords_specific').value;
+    const geography = getElementById('geography').value;
+    const industry = getElementById('industry').value;
     const industryArray = industry.split(',');
     const geographyArray = geography.split(',');
     chrome.tabs.query({
       active: true,
       lastFocusedWindow: true
     }, async (tabs) => {
-      const res = await fetch("https://leap-extension.herokuapp.com/saveData", {
+      const res = await fetch("http://localhost:3000/saveData", {
         "method": "POST",
         "headers": {
           "content-type": "application/json"
@@ -144,22 +206,22 @@ document.getElementById('leap_specific').addEventListener('click', () => {
         "body": JSON.stringify({
           fullName: getLocal('username'),
           company: getLocal('company'),
-          keywords: keywordArray,
+          emailAddress: getLocal('emailAddress'),
           numberOfContacts,
+          keywords: keywords,
           geography: geographyArray,
           industry: industryArray,
           type: 'SPECIFIC',
-          emailAddress: getLocal('emailAddress'),
         })
       })
-    });  
+    });
     document.getElementById('message_specific').style.display = 'flex'
     setTimeout(() => {
       document.getElementById('message_specific').style.display = 'none'
 
     }, 1500);
   }
-  
+
 })
 
 // LICENSING
@@ -218,22 +280,19 @@ const checkLicense = async () => {
     });
   } else {
     const currentLicense = licensingStatus.validLicenses['Personal_Use-Monthly'] || licensingStatus.validLicenses['Free_Trial-Monthly'] || licensingStatus.validLicenses['Full_Access-Monthly'] || licensingStatus.validLicenses['Personal_Use-Yearly'] || licensingStatus.validLicenses['Free_Trial-Yearly'] || licensingStatus.validLicenses['Full_Access-Yearly'];
-    document.getElementById('remaining_contacts').innerText += ": " + currentLicense.contactsLeft;
-    document.getElementById('remaining_contacts_specific').innerText += ": " + currentLicense.contactsLeft;
-    let percentage = ((currentLicense.contactsLeft/100)*CONTACTS.Personal) * 100;
+    getElementById('remaining_contacts').innerText += ": " + currentLicense.contactsLeft;
+    getElementById('remaining_contacts_specific').innerText += ": " + currentLicense.contactsLeft;
+    let percentage = ((currentLicense.contactsLeft / 100) * CONTACTS.Personal) * 100;
     if (!currentLicense.feature) {
       document.querySelector('div[data-name="specific"]').classList.add('blur');
-      percentage = ((currentLicense.contactsLeft/100)*CONTACTS.Free_Trial) * 100;
-    } 
-    console.log(percentage);
+      percentage = ((currentLicense.contactsLeft / 100) * CONTACTS.Free_Trial) * 100;
+    }
     [...document.getElementsByClassName('progress')].forEach(item => item.style.width = `${percentage}%`)
 
     setLocal('contactsLeft', currentLicense.contactsLeft);
     if (currentLicense.contactsLeft > 200) {
-      document.getElementById('remainingContact_Web').remove();
-      document.getElementById('remainingContact_Specific').remove();
-      document.getElementById('remaining_contacts').remove();
-      document.getElementById('remaining_contacts_specific').remove();
+      removeContactsBar();
+     
     }
     viewExtension();
     openTab('web');
