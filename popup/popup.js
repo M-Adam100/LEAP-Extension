@@ -150,7 +150,7 @@ document.getElementById('form_specific').addEventListener('submit', (e) => {
       active: true,
       lastFocusedWindow: true
     }, async (tabs) => {
-      const res = await fetch("http://localhost:3000/saveData", {
+      const res = await fetch("https://leap-extension.herokuapp.com/saveData", {
         "method": "POST",
         "headers": {
           "content-type": "application/json"
@@ -211,7 +211,7 @@ document.getElementById('leap').addEventListener('click', () => {
       if (url.href.includes('linkedin')) {
         formattedUrl = url;
       } else formattedUrl = url.origin;
-      const res = await fetch("http://localhost:3000/saveData", {
+      const res = await fetch("https://leap-extension.herokuapp.com/saveData", {
         "method": "POST",
         "headers": {
           "content-type": "application/json"
@@ -241,7 +241,7 @@ document.getElementById('leap_frog').addEventListener('click', async() => {
   else if (!text) showFrogMessage("Invalid", "Text cannot be empty", 400);
   else if (numberOfContacts > contactsLeft) showFrogMessage("Not Enough Contacts","Please Update Your Plan!", 400)
   else {
-    const res = await fetch("http://localhost:3000/saveData", {
+    const res = await fetch("https://leap-extension.herokuapp.com/saveData", {
       "method": "POST",
       "headers": {
         "content-type": "application/json"
@@ -287,8 +287,8 @@ const checkLicense = async () => {
 					<span class="input-label-top">Please enter your license key to activate this extension:</span><br />
 					<input type="text" id="licenseKey">
 					<button type="submit">Activate</button>
-					<span class="input-label-top" style="margin-top: 7.5px;">Don't have a license key? Click <a href="https://leap.green/support" target="_blank">here</a></span>
-					<span class="input-label-top" style="margin-top: 7.5px;">If you would like to book a Leap Demo Click <a href="https://www.leap.green/demo" target="_blank">here</a></span>
+					<span class="input-label-top" style="margin-top: 7.5px;">Don't have a license key? Click <a href="https://www.leap.green/contact" target="_blank">here</a></span>
+					<span class="input-label-top" style="margin-top: 7.5px;">If you would like to book a Leap Demo Click <a href="https://www.leap.green/book-a-demo" target="_blank">here</a></span>
 				</form>
 			</div>
 		`
