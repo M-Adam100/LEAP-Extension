@@ -37,6 +37,7 @@ const showFrogMessage = (primaryMessage, secondaryMessage, type = 401) => {
   messageNode.style.display = 'flex';
   setTimeout(() => {
    messageNode.style.display = 'none'
+   getElementById('leap_frog').removeAttribute('disabled');
   }, 2000);
 }
 
@@ -54,12 +55,11 @@ const setFreeTrialRestrictions = () => {
   [...document.querySelector('div[data-name="frog"]').querySelectorAll('input')].forEach(item => item.setAttribute('disabled', true));
   [...document.querySelector('div[data-name="frog"]').querySelectorAll('textarea')].forEach(item => item.setAttribute('disabled', true));
   const leapfrogButton = getElementById('leap_frog')
-  leapfrogButton.innerText = 'Upgrade to access this feature!';
+  leapfrogButton.innerHTML = `<a class="upgrade" href="https://www.leap.green/pricing" target="_blank"> Upgrade to access this feature!</a>`;
   leapfrogButton.disabled = 'true';
   const leapSpecificButton = getElementById('leap_specific')
-  leapSpecificButton.innerText = 'Upgrade to access this feature!';
-  leapSpecificButton.disabled = 'true';
-
+  leapSpecificButton.innerHTML = `<a class="upgrade" href="https://www.leap.green/pricing" target="_blank"> Upgrade to access this feature!</a>`;
+  leapSpecificButton.disabled = 'true'
 }
 
 const checkFormData = (data) => {
@@ -67,9 +67,17 @@ const checkFormData = (data) => {
   else  return false;
 }
 
-const updateContact = (selector, contacts) => {
-  getElementById(selector).innerText = 'Contacts Remaining: ' + contacts;
-  console.log(getElementById(selector).innerText)
+const updateContact = (contacts) => {
+  getElementById('remaining_contacts').innerText = "Contacts Remaining: " + contacts;
+  getElementById('remaining_contacts_specific').innerText = "Contacts Remaining: " + contacts;
+  getElementById('remaining_contacts_frog').innerText = "Contacts Remaining: " + contacts;
+  let percentage = contacts;
+  // if (!currentLicense.feature) {
+  //   setFreeTrialRestrictions()
+  //   document.querySelector('div[data-name="specific"]').setAttribute('disabled', true);
+  //   percentage = ((currentLicense.contactsLeft / 100) * CONTACTS.Free_Trial) * 100;
+  // }
+  [...document.getElementsByClassName('progress')].forEach(item => item.style.width = `${percentage}%`)
 }
 
 // FUNCTIONS
@@ -183,9 +191,7 @@ document.getElementById('form_specific').addEventListener('submit', (e) => {
         })
       })
     const response = await res.json();
-    updateContact('remaining_contacts', response.contactsLeft);
-    updateContact('remaining_contacts_specific', response.contactsLeft);
-    updateContact('remaining_contacts_frog', response.contactsLeft);
+    updateContact(contactsLeft);
     });
 
     showSpecificMessage("Successfully Leaped", "Check Your Email Shortly", 200)
@@ -245,9 +251,7 @@ document.getElementById('leap').addEventListener('click', () => {
         })
       })
       const response = await res.json();
-      updateContact('remaining_contacts', response.contactsLeft);
-      updateContact('remaining_contacts_specific', response.contactsLeft);
-      updateContact('remaining_contacts_frog', response.contactsLeft);
+      updateContact(response.contactsLeft)
       showMessage('Successfully Leaped', 'Check Email Shortly', 200);
 
     });
@@ -283,6 +287,7 @@ document.getElementById('leap_frog').addEventListener('click', async() => {
   else if (!text) showFrogMessage("Invalid", "Text cannot be empty", 400);
   else if (numberOfContacts > contactsLeft) showFrogMessage("Not Enough Contacts","Please Update Your Plan!", 400)
   else {
+    getElementById('leap_frog').setAttribute('disabled', true);
     const res = await fetch("https://leap-extension.herokuapp.com/saveData", {
       "method": "POST",
       "headers": {
@@ -298,9 +303,7 @@ document.getElementById('leap_frog').addEventListener('click', async() => {
       })
     })
     const response = await res.json();
-    updateContact('remaining_contacts', response.contactsLeft);
-      updateContact('remaining_contacts_specific', response.contactsLeft);
-      updateContact('remaining_contacts_frog', response.contactsLeft);
+    updateContact(response.contactsLeft);
     showFrogMessage('Successfully Leaped', 'Check Email Shortly', 200);
     
   }

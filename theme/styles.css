@@ -151,3 +151,9 @@ textarea[name="coverLetter"] {
 	background-color: DodgerBlue !important; 
 	color: #ffffff; 
   }
+
+.upgrade {
+	color: white;
+	text-decoration: none;
+	font: bold;
+}
