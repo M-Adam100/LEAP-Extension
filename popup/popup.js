@@ -62,6 +62,16 @@ const setFreeTrialRestrictions = () => {
 
 }
 
+const checkFormData = (data) => {
+  if ([...Object.values(data)].filter(item => item).length > 1) return true;
+  else  return false;
+}
+
+const updateContact = (selector, contacts) => {
+  getElementById(selector).innerText = 'Contacts Remaining: ' + contacts;
+  console.log(getElementById(selector).innerText)
+}
+
 // FUNCTIONS
 const getFormData = (formSelector, allRequired, separateBy) => {
   var formInputs = document.querySelector(formSelector).querySelectorAll("[id]:not([type=\"file\"])"),
@@ -145,6 +155,8 @@ document.getElementById('form_specific').addEventListener('submit', (e) => {
   const contactsLeft = getLocal('contactsLeft');
   if (contactsLeft < numberOfContacts) {
     showSpecificMessage("Not Enough Contacts","Please Update Your Plan!");
+  } else if (!checkFormData(data)) {
+    showSpecificMessage("Invalid", "Kindly select at least one other field!");
   } else {
     chrome.tabs.query({
       active: true,
@@ -171,6 +183,7 @@ document.getElementById('form_specific').addEventListener('submit', (e) => {
         })
       })
     });
+    console.log(res);
     showSpecificMessage("Successfully Leaped", "Check Your Email Shortly", 200)
   }
   }
@@ -211,7 +224,7 @@ document.getElementById('leap').addEventListener('click', () => {
       if (url.href.includes('linkedin')) {
         formattedUrl = url;
       } else formattedUrl = url.origin;
-      const res = await fetch("https://leap-extension.herokuapp.com/saveData", {
+      const res = await fetch("http://localhost:3000/saveData", {
         "method": "POST",
         "headers": {
           "content-type": "application/json"
@@ -227,6 +240,8 @@ document.getElementById('leap').addEventListener('click', () => {
           type: 'WEB'
         })
       })
+      const response = await res.json();
+      updateContact('remaining_contacts', response.contactsLeft);
       showMessage('Successfully Leaped', 'Check Email Shortly', 200);
 
     });
@@ -261,6 +276,22 @@ document.getElementById('leap_frog').addEventListener('click', async() => {
   
 })
 
+//VALIDATION
+
+getElementById('min_revenue').addEventListener('change', (e) => {
+  const maxRevenue = getElementById('max_revenue').value;
+  if (maxRevenue && e.target.value > maxRevenue) {
+    getElementById('min_revenue').value = maxRevenue
+  }
+})
+
+getElementById('max_revenue').addEventListener('change', (e) => {
+  const minRevenue = getElementById('min_revenue').value;
+  if (minRevenue && e.target.value < minRevenue) {
+    getElementById('max_revenue').value = minRevenue
+  }
+})
+
 
 // LICENSING
 const checkLicense = async () => {
@@ -287,7 +318,7 @@ const checkLicense = async () => {
 					<span class="input-label-top">Please enter your license key to activate this extension:</span><br />
 					<input type="text" id="licenseKey">
 					<button type="submit">Activate</button>
-					<span class="input-label-top" style="margin-top: 7.5px;">Don't have a license key? Click <a href="https://www.leap.green/contact" target="_blank">here</a></span>
+					<span class="input-label-top" style="margin-top: 7.5px;">Don't have a license key? Click <a href="https://www.leap.green/book-a-demo" target="_blank">here</a></span>
 					<span class="input-label-top" style="margin-top: 7.5px;">If you would like to book a Leap Demo Click <a href="https://www.leap.green/book-a-demo" target="_blank">here</a></span>
 				</form>
 			</div>
