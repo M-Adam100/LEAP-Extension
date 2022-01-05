@@ -87,11 +87,11 @@ const updateContact = (contacts) => {
   getElementById('remaining_contacts_specific').innerText = "Contacts Remaining: " + contacts;
   getElementById('remaining_contacts_frog').innerText = "Contacts Remaining: " + contacts;
   let percentage = contacts;
-  // if (!currentLicense.feature) {
-  //   setFreeTrialRestrictions()
-  //   document.querySelector('div[data-name="specific"]').setAttribute('disabled', true);
-  //   percentage = ((currentLicense.contactsLeft / 100) * CONTACTS.Free_Trial) * 100;
-  // }
+  setLocal('contactsLeft', contacts);
+  if (!getLocal('feature')) {
+    document.querySelector('div[data-name="specific"]').setAttribute('disabled', true);
+    percentage = ((contacts/ 100) * CONTACTS.Free_Trial) * 100;
+  }
   [...document.getElementsByClassName('progress')].forEach(item => item.style.width = `${percentage}%`)
 }
 
@@ -395,8 +395,7 @@ const checkLicense = async () => {
       setFreeTrialRestrictions()
       document.querySelector('div[data-name="specific"]').setAttribute('disabled', true);
       percentage = ((currentLicense.contactsLeft / 100) * CONTACTS.Free_Trial) * 100;
-    }
-    console.log(percentage);
+    } else setLocal('feature', true);
     [...document.getElementsByClassName('progress')].forEach(item => item.style.width = `${percentage}%`)
 
     setLocal('contactsLeft', currentLicense.contactsLeft);
