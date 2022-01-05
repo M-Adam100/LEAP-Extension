@@ -14,6 +14,7 @@ const showMessage = (primaryMessage, secondaryMessage, type) => {
   messageNode.innerHTML = primaryMessage + '<br/>' + secondaryMessage;
   messageNode.style.display = 'flex';
   setTimeout(() => {
+    getElementById('leap').removeAttribute('disabled');
     messageNode.style.display = 'none'
   }, 2000);
 }
@@ -25,6 +26,7 @@ const showSpecificMessage = (primaryMessage, secondaryMessage, type) => {
   messageNode.innerHTML = primaryMessage + '<br/>' + secondaryMessage;
   messageNode.style.display = 'flex';
   setTimeout(() => {
+   getElementById('leap_specific').removeAttribute('disabled');
    messageNode.style.display = 'none'
   }, 2000);
 }
@@ -42,14 +44,18 @@ const showFrogMessage = (primaryMessage, secondaryMessage, type = 401) => {
 }
 
 const checkMinMax = () => {
-  const minEmployee = getElementById('min_employee').value;
-  const max_employee = getElementById('max_employee').value;
+  const minEmployee = Number(getElementById('min_employee').value);
+  const max_employee = Number(getElementById('max_employee').value);
+  console.log(minEmployee, max_employee);
   if (minEmployee && max_employee) {
     if (minEmployee > max_employee) return false;
   }
 
-  const minRevenue = getElementById('min_revenue').value;
-  const maxRevenue = getElementById('max_revenue').value;
+
+  const minRevenue = Number(getElementById('min_revenue').value);
+  const maxRevenue = Number(getElementById('max_revenue').value);
+  console.log(minEmployee, max_employee, minRevenue, maxRevenue);
+
   if (minRevenue && maxRevenue) {
     if (minRevenue > maxRevenue) return false;
   } 
@@ -83,16 +89,16 @@ const checkFormData = (data) => {
 }
 
 const updateContact = (contacts) => {
-  getElementById('remaining_contacts').innerText = "Contacts Remaining: " + contacts;
-  getElementById('remaining_contacts_specific').innerText = "Contacts Remaining: " + contacts;
-  getElementById('remaining_contacts_frog').innerText = "Contacts Remaining: " + contacts;
+  getElementById('remaining_contacts')?.innerText = "Contacts Remaining: " + contacts;
+  getElementById('remaining_contacts_specific')?.innerText = "Contacts Remaining: " + contacts;
+  getElementById('remaining_contacts_frog')?.innerText = "Contacts Remaining: " + contacts;
   let percentage = contacts;
   setLocal('contactsLeft', contacts);
   if (!getLocal('feature')) {
-    document.querySelector('div[data-name="specific"]').setAttribute('disabled', true);
+    document.querySelector('div[data-name="specific"]')?.setAttribute('disabled', true);
     percentage = ((contacts/ 100) * CONTACTS.Free_Trial) * 100;
   }
-  [...document.getElementsByClassName('progress')].forEach(item => item.style.width = `${percentage}%`)
+  [...document.getElementsByClassName('progress')]?.forEach(item => item.style.width = `${percentage}%`)
 }
 
 // FUNCTIONS
@@ -183,6 +189,7 @@ document.getElementById('form_specific').addEventListener('submit', (e) => {
   } else if (!checkMinMax()) {
     showSpecificMessage("Invalid", "Kindly recheck min/max values!");
   } else {
+    getElementById('leap_specific').setAttribute('disabled', true);
     chrome.tabs.query({
       active: true,
       lastFocusedWindow: true
@@ -209,7 +216,7 @@ document.getElementById('form_specific').addEventListener('submit', (e) => {
         })
       })
     const response = await res.json();
-    updateContact(contactsLeft);
+    updateContact(response.contactsLeft);
     });
 
     showSpecificMessage("Successfully Leaped", "Check Your Email Shortly", 200)
@@ -243,6 +250,7 @@ document.getElementById('leap').addEventListener('click', () => {
     showMessage("Not Enough Contacts","Please Update Your Plan!")
   } else {
     const keywords = getElementById('keywords').value;
+    getElementById('leap').setAttribute('disabled', true);
     chrome.tabs.query({
       active: true,
       lastFocusedWindow: true
