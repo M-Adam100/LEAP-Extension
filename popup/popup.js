@@ -41,6 +41,21 @@ const showFrogMessage = (primaryMessage, secondaryMessage, type = 401) => {
   }, 2000);
 }
 
+const checkMinMax = () => {
+  const minEmployee = getElementById('min_employee').value;
+  const max_employee = getElementById('max_employee').value;
+  if (minEmployee && max_employee) {
+    if (minEmployee > max_employee) return false;
+  }
+
+  const minRevenue = getElementById('min_revenue').value;
+  const maxRevenue = getElementById('max_revenue').value;
+  if (minRevenue && maxRevenue) {
+    if (minRevenue > maxRevenue) return false;
+  } 
+  return true;
+}
+
 const removeContactsBar = () => {
   getElementById('remainingContact_Web').remove();
   getElementById('remainingContact_Specific').remove();
@@ -139,7 +154,7 @@ chrome.tabs.query({
 }, async (tabs) => {
   const url = tabs[0].url;
   if (url.includes('https://www.linkedin.com/in')) {
-    getElementById('connections_div').style.display = 'flex';
+    //getElementById('connections_div').style.display = 'flex';
     getElementById('numberOfContacts').value = 1;
     getElementById('numberOfContacts').setAttribute('disabled', true);
     getElementById('keywords').setAttribute('disabled', true);
@@ -165,11 +180,14 @@ document.getElementById('form_specific').addEventListener('submit', (e) => {
     showSpecificMessage("Not Enough Contacts","Please Update Your Plan!");
   } else if (!checkFormData(data)) {
     showSpecificMessage("Invalid", "Kindly select at least one other field!");
+  } else if (!checkMinMax()) {
+    showSpecificMessage("Invalid", "Kindly recheck min/max values!");
   } else {
     chrome.tabs.query({
       active: true,
       lastFocusedWindow: true
     }, async (tabs) => {
+      console.log(data);
       const res = await fetch("https://leap-extension.herokuapp.com/saveData", {
         "method": "POST",
         "headers": {
@@ -185,8 +203,8 @@ document.getElementById('form_specific').addEventListener('submit', (e) => {
           geography: data.geography,
           employeesMin: data.min_employee,
           employeesMax: data.max_employee,
-          revenueMin: data.revenueMin,
-          revenueMax: data.revenueMax,
+          revenueMin: data.min_revenue,
+          revenueMax: data.max_revenue,
           type: 'SPECIFIC',
         })
       })
@@ -308,22 +326,6 @@ document.getElementById('leap_frog').addEventListener('click', async() => {
     
   }
   
-})
-
-//VALIDATION
-
-getElementById('min_revenue').addEventListener('change', (e) => {
-  const maxRevenue = getElementById('max_revenue').value;
-  if (maxRevenue && e.target.value > maxRevenue) {
-    getElementById('min_revenue').value = maxRevenue
-  }
-})
-
-getElementById('max_revenue').addEventListener('change', (e) => {
-  const minRevenue = getElementById('min_revenue').value;
-  if (minRevenue && e.target.value < minRevenue) {
-    getElementById('max_revenue').value = minRevenue
-  }
 })
 
 
